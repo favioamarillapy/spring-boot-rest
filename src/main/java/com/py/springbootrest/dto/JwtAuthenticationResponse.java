@@ -1,6 +1,6 @@
 package com.py.springbootrest.dto;
 
-import com.py.springbootrest.model.User;
+import com.py.springbootrest.model.UserApp;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class JwtAuthenticationResponse {
-    private User user;
+    private UserApp userApp;
     private String token;
 }

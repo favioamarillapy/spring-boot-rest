@@ -4,11 +4,11 @@ import com.py.springbootrest.dto.JwtAuthenticationResponse;
 import com.py.springbootrest.dto.SignUpRequest;
 import com.py.springbootrest.dto.SigninRequest;
 import com.py.springbootrest.model.Role;
-import com.py.springbootrest.model.User;
+import com.py.springbootrest.model.UserApp;
 import com.py.springbootrest.repository.UserRepository;
+import com.py.springbootrest.security.CustomAuthenticationManager;
 import com.py.springbootrest.service.AuthenticationService;
 import com.py.springbootrest.service.JwtService;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,24 +23,31 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
+    private final CustomAuthenticationManager customAuthenticationManager;
 
     @Override
     public JwtAuthenticationResponse signup(SignUpRequest request) {
-        var user = User.builder().firstName(request.getFirstName()).lastName(request.getLastName())
-                .email(request.getEmail()).password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER).build();
+        var user = UserApp.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.USER)
+                .build();
+
         userRepository.save(user);
+
         var jwt = jwtService.generateToken(user);
+
         return JwtAuthenticationResponse.builder()
                 .token(jwt)
-                .user(user)
+                .userApp(user)
                 .build();
     }
 
     @Override
     public JwtAuthenticationResponse signin(SigninRequest request) {
-        authenticationManager.authenticate(
+        customAuthenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
         var user = userRepository.findByEmail(request.getEmail())
@@ -50,7 +57,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         return JwtAuthenticationResponse.builder()
                 .token(jwt)
-                .user(user)
+                .userApp(user)
                 .build();
     }
+
 }
