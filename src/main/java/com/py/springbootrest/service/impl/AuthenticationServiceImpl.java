@@ -1,6 +1,6 @@
 package com.py.springbootrest.service.impl;
 
-import com.py.springbootrest.dto.JwtAuthenticationResponse;
+import com.py.springbootrest.dto.AuthenticationResponse;
 import com.py.springbootrest.dto.SignUpRequest;
 import com.py.springbootrest.dto.SigninRequest;
 import com.py.springbootrest.model.Role;
@@ -26,7 +26,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final CustomAuthenticationManager customAuthenticationManager;
 
     @Override
-    public JwtAuthenticationResponse signup(SignUpRequest request) {
+    public AuthenticationResponse signup(SignUpRequest request) {
         var user = UserApp.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -39,14 +39,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         var jwt = jwtService.generateToken(user);
 
-        return JwtAuthenticationResponse.builder()
+        return AuthenticationResponse.builder()
                 .token(jwt)
                 .userApp(user)
                 .build();
     }
 
     @Override
-    public JwtAuthenticationResponse signin(SigninRequest request) {
+    public AuthenticationResponse signin(SigninRequest request) {
         customAuthenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
@@ -55,7 +55,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         var jwt = jwtService.generateToken(user);
 
-        return JwtAuthenticationResponse.builder()
+        return AuthenticationResponse.builder()
                 .token(jwt)
                 .userApp(user)
                 .build();
