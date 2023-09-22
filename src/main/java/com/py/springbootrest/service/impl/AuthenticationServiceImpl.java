@@ -1,6 +1,7 @@
 package com.py.springbootrest.service.impl;
 
 import com.py.springbootrest.dto.AuthenticationResponse;
+import com.py.springbootrest.dto.CustomResponse;
 import com.py.springbootrest.dto.SignUpRequest;
 import com.py.springbootrest.dto.SigninRequest;
 import com.py.springbootrest.model.Role;
@@ -26,7 +27,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final CustomAuthenticationManager customAuthenticationManager;
 
     @Override
-    public AuthenticationResponse signup(SignUpRequest request) {
+    public CustomResponse<AuthenticationResponse> signup(SignUpRequest request) {
+        var existUser = userRepository.findByEmail(request.getEmail()).isPresent();
+
+        if (existUser) {
+            return CustomResponse.<AuthenticationResponse>builder()
+                    .message("User with email already exists")
+                    .error(true)
+                    .data(null)
+                    .build();
+        }
+
         var user = UserApp.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -39,25 +50,47 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         var jwt = jwtService.generateToken(user);
 
-        return AuthenticationResponse.builder()
+        var authenticationResponse = AuthenticationResponse.builder()
                 .token(jwt)
                 .userApp(user)
+                .build();
+
+
+        return CustomResponse.<AuthenticationResponse>builder()
+                .message("User registered successfully")
+                .error(false)
+                .data(authenticationResponse)
                 .build();
     }
 
     @Override
-    public AuthenticationResponse signin(SigninRequest request) {
+    public CustomResponse<AuthenticationResponse> signin(SigninRequest request) {
+        var user = userRepository.findByEmail(request.getEmail())
+                .orElse(null);
+
+        if (user == null) {
+            return CustomResponse.<AuthenticationResponse>builder()
+                    .message("The user was not found")
+                    .error(true)
+                    .data(null)
+                    .build();
+        }
+
         customAuthenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
-        var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
-
         var jwt = jwtService.generateToken(user);
 
-        return AuthenticationResponse.builder()
+        var authenticationResponse = AuthenticationResponse.builder()
                 .token(jwt)
                 .userApp(user)
+                .build();
+
+
+        return CustomResponse.<AuthenticationResponse>builder()
+                .message("User login successfully")
+                .error(false)
+                .data(authenticationResponse)
                 .build();
     }
 

@@ -1,6 +1,7 @@
 package com.py.springbootrest.controller;
 
 import com.py.springbootrest.dto.AuthenticationResponse;
+import com.py.springbootrest.dto.CustomResponse;
 import com.py.springbootrest.dto.SignUpRequest;
 import com.py.springbootrest.dto.SigninRequest;
 import com.py.springbootrest.service.AuthenticationService;
@@ -19,12 +20,12 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/signup")
-    public ResponseEntity<AuthenticationResponse> signup(@RequestBody SignUpRequest request) {
+    public ResponseEntity<CustomResponse<AuthenticationResponse>> signup(@RequestBody SignUpRequest request) {
         return ResponseEntity.ok(authenticationService.signup(request));
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<AuthenticationResponse> signin(@RequestBody SigninRequest request) {
+    public ResponseEntity<CustomResponse<AuthenticationResponse>> signin(@RequestBody SigninRequest request) {
         return ResponseEntity.ok(authenticationService.signin(request));
     }
 }
