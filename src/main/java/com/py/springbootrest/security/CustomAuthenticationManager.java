@@ -16,6 +16,9 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+ * Class to validate user login
+ * */
 @Component
 @Slf4j
 @RequiredArgsConstructor
