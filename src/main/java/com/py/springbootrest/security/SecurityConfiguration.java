@@ -29,12 +29,15 @@ public class SecurityConfiguration {
     private final UserService userService;
 
     private final String[] PUBLIC_URL = {
+            // swagger
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html",
             "/webjars/swagger-ui/**",
             "/api-docs/**",
             "/api-docs-ui",
+
+            // /api
             "/api/v1/auth/**"
     };
 
