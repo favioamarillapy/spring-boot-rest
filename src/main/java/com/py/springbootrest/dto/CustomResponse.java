@@ -1,6 +1,5 @@
 package com.py.springbootrest.dto;
 
-import com.py.springbootrest.model.UserApp;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.py.springbootrest.model;
+package com.py.springbootrest.entity;
 
 public enum Role {
     USER,

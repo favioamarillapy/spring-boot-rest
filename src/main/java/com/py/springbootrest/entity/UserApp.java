@@ -1,4 +1,4 @@
-package com.py.springbootrest.model;
+package com.py.springbootrest.entity;
 
 import java.util.Collection;
 import java.util.List;
