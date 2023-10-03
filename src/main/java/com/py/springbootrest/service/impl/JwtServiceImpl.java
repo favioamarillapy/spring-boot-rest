@@ -1,11 +1,11 @@
 package com.py.springbootrest.service.impl;
 
 import com.py.springbootrest.service.JwtService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
+@Slf4j
 public class JwtServiceImpl implements JwtService {
 
     @Value("${application.security.jwt.secret-key}")
@@ -26,8 +27,8 @@ public class JwtServiceImpl implements JwtService {
     private int expiration;
 
     @Override
-    public String extractUserName(String token) {
-        return extractClaim(token, Claims::getSubject);
+    public String extractUserName(String token, HttpServletRequest request) {
+        return extractClaim(token, Claims::getSubject, request);
     }
 
     @Override
@@ -36,14 +37,19 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String userName = extractUserName(token);
-        return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    public boolean isTokenValid(String token, UserDetails userDetails, HttpServletRequest request) {
+        final String userName = extractUserName(token, request);
+        return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token, request);
     }
 
-    private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolvers.apply(claims);
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers, HttpServletRequest request) {
+        try {
+            final Claims claims = extractAllClaims(token, request);
+            return claimsResolvers.apply(claims);
+        } catch (Exception ex) {
+            log.error("Error to extract claims: ", ex);
+        }
+        return null;
     }
 
     private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
@@ -53,17 +59,36 @@ public class JwtServiceImpl implements JwtService {
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
     }
 
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    private boolean isTokenExpired(String token, HttpServletRequest request) {
+        return extractExpiration(token, request).before(new Date());
     }
 
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+    private Date extractExpiration(String token, HttpServletRequest request) {
+        return extractClaim(token, Claims::getExpiration, request);
     }
 
-    private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token)
-                .getBody();
+    private Claims extractAllClaims(String token, HttpServletRequest request) {
+        try {
+            return Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token)
+                    .getBody();
+        } catch (SignatureException ex) {
+            log.error("", ex);
+            request.setAttribute("expired", "Invalid JWT Signature");
+        } catch (MalformedJwtException ex) {
+            log.error("", ex);
+            request.setAttribute("expired", "Invalid JWT token");
+        } catch (ExpiredJwtException ex) {
+            log.error("", ex);
+            request.setAttribute("expired", "Expired JWT token");
+        } catch (UnsupportedJwtException ex) {
+            log.error("", ex);
+            request.setAttribute("expired", "Unsupported JWT exception");
+        } catch (IllegalArgumentException ex) {
+            log.error("", ex);
+            request.setAttribute("expired", "Jwt claims string is empty");
+        }
+
+        return null;
     }
 
     private Key getSigningKey() {

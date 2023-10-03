@@ -25,10 +25,12 @@ class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
                          AuthenticationException authException
     ) throws IOException {
 
+        final String expired = (String) request.getAttribute("expired");
+        final String message = expired != null && !expired.isEmpty() ? expired : authException.getMessage();
 
         var customResponse = CustomResponse
                 .builder()
-                .message(authException.getMessage())
+                .message(message)
                 .error(true)
                 .data(null)
                 .build();
