@@ -10,7 +10,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -57,9 +60,17 @@ public class CustomAuthenticationManager implements AuthenticationManager {
             }
 
             List<GrantedAuthority> roleList = new ArrayList<>();
-            roleList.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+            roleList.add(new SimpleGrantedAuthority(user.getRole().name()));
 
-            return new UsernamePasswordAuthenticationToken(user, password, roleList);
+
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                    new UsernamePasswordAuthenticationToken(user, password, roleList);
+
+            SecurityContext context = SecurityContextHolder.createEmptyContext();
+            context.setAuthentication(usernamePasswordAuthenticationToken);
+            SecurityContextHolder.setContext(context);
+
+            return usernamePasswordAuthenticationToken;
         } else {
             throw new BadCredentialsException("The user was not found");
         }
