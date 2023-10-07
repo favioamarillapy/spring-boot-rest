@@ -1,7 +1,7 @@
 package com.py.springbootrest.security;
 
 import com.py.springbootrest.service.JwtService;
-import com.py.springbootrest.service.UserService;
+import com.py.springbootrest.service.UserAppService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,7 +26,7 @@ import java.io.IOException;
 public class CustomAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final UserService userService;
+    private final UserAppService userAppService;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -47,7 +47,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 
         if (userEmail != null && !userEmail.isEmpty()
                 && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userService.userDetailsService()
+            UserDetails userDetails = userAppService.userDetailsService()
                     .loadUserByUsername(userEmail);
 
             if (jwtService.isTokenValid(jwt, userDetails, request)) {

@@ -2,7 +2,7 @@ package com.py.springbootrest.security;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
-import com.py.springbootrest.service.UserService;
+import com.py.springbootrest.service.UserAppService;
 import jakarta.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +29,7 @@ public class SecurityConfiguration {
 
     private final CustomAuthenticationFilter customAuthenticationFilter;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
-    private final UserService userService;
+    private final UserAppService userAppService;
 
     private final String[] PUBLIC_URL = {
             // swagger
@@ -64,7 +64,7 @@ public class SecurityConfiguration {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userService.userDetailsService());
+        authProvider.setUserDetailsService(userAppService.userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
