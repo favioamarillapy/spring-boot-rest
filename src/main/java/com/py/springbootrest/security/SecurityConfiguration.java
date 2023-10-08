@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
@@ -31,6 +32,7 @@ public class SecurityConfiguration {
 
     private final CustomAuthenticationFilter customAuthenticationFilter;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final UserAppService userAppService;
 
     private final String[] PUBLIC_URL = {
@@ -57,6 +59,7 @@ public class SecurityConfiguration {
                         .permitAll().anyRequest().authenticated()
                 )
                 .exceptionHandling(exp -> exp.authenticationEntryPoint(customAuthenticationEntryPoint))
+                .exceptionHandling(exp -> exp.accessDeniedHandler(customAccessDeniedHandler))
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
