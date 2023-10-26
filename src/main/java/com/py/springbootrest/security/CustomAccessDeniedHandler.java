@@ -39,7 +39,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         log.error("Authentication entry point: {}", jsonResponse);
 
         response.setContentType("application/json");
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.getOutputStream().println(jsonResponse);
     }
 }

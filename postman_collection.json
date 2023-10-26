@@ -89,10 +89,10 @@
 			]
 		},
 		{
-			"name": "Test",
+			"name": "Parameter",
 			"item": [
 				{
-					"name": "Admin",
+					"name": "Find All",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -119,21 +119,20 @@
 							}
 						},
 						"url": {
-							"raw": "{{host}}/v1/test/admin",
+							"raw": "{{host}}/v1/parameter",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
 								"v1",
-								"test",
-								"admin"
+								"parameter"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "User",
+					"name": "Find by ID",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -160,14 +159,127 @@
 							}
 						},
 						"url": {
-							"raw": "{{host}}/v1/test/user",
+							"raw": "{{host}}/v1/parameter/1",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
 								"v1",
-								"test",
-								"user"
+								"parameter",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"PARAMETER1\",\r\n  \"value\": \"PARAMETER1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/v1/parameter",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"v1",
+								"parameter"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"PARAMETER2\",\r\n  \"value\": \"PARAMETER2\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/v1/parameter/1",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"v1",
+								"parameter",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/v1/parameter/1",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"v1",
+								"parameter",
+								"1"
 							]
 						}
 					},
